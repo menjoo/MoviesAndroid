@@ -1,5 +1,5 @@
 # MovieApp
-Shows how I think an Android app should be build
+Demonstrates a small movie listing app built with the MVVM architecture.
 
 ## Build status
 AppCenter [![Build status](https://build.appcenter.ms/v0.1/apps/c8d15929-0c9a-4fd1-ac19-58f961d1655a/branches/master/badge)](https://appcenter.ms)
@@ -15,11 +15,11 @@ This app consumes https://www.themoviedb.org
 ### Dagger2
 ...
 
-### RxJava2
-...
+### Kotlin Coroutines
+Used for asynchronous work and state management without RxJava.
 
 ### Android Architecture Components
-...
+Uses ViewModel and StateFlow to expose UI state in a reactive way with coroutines. Coroutines are launched within the `viewModelScope` to automatically cancel work when the ViewModel is cleared.
 
 ### OkHttp
 ...

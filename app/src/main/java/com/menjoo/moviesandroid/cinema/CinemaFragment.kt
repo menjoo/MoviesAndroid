@@ -1,11 +1,11 @@
 package com.menjoo.moviesandroid.cinema
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,12 +30,10 @@ class CinemaFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel = ViewModelProviders.of(this).get(CinemaViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CinemaViewModel::class.java)
         setupRecyclerView()
         setupPullToRefresh()
-        observeMovieList()
-        observeLoading()
-        observeErrors()
+        observeViewModel()
     }
 
     private fun setupRecyclerView() {
@@ -46,7 +44,7 @@ class CinemaFragment : Fragment() {
 
         val scrollListener: EndlessRecyclerViewScrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-                viewModel.presenter.onLoadMore()
+                viewModel.onLoadMore()
             }
 
         }
@@ -54,24 +52,18 @@ class CinemaFragment : Fragment() {
     }
 
     private fun setupPullToRefresh() {
-        pullToRefreshIndicator.setOnRefreshListener { viewModel.presenter.onRefreshPulled() }
+        pullToRefreshIndicator.setOnRefreshListener { viewModel.onRefreshPulled() }
     }
 
-    private fun observeMovieList() {
-        viewModel.observableMovies.observe(this, Observer { movies ->
-            adapter.setItems(movies ?: emptyList())
-        })
-    }
-
-    private fun observeLoading() {
-        viewModel.loading.observe(this, Observer { isLoading ->
-            pullToRefreshIndicator.isRefreshing = isLoading ?: false
-        })
-    }
-
-    private fun observeErrors() {
-        viewModel.error.observe(this, Observer { hasError ->
-            errorMessage.visibility = hasError?.asVisibility() ?: View.GONE
-        })
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.movies.collect { adapter.setItems(it) }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.loading.collect { pullToRefreshIndicator.isRefreshing = it }
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.error.collect { errorMessage.visibility = it.asVisibility() }
+        }
     }
 }
