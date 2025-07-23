@@ -8,6 +8,7 @@ interface CinemaContract {
 
     interface View : BaseView<Presenter> {
         fun addMoviesToList(moviesToShow: List<Movie>)
+        fun clearMovies()
         fun showLoading()
         fun hideLoading()
         fun showError()

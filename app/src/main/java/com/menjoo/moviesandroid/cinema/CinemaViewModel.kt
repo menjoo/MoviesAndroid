@@ -24,6 +24,11 @@ class CinemaViewModel : ViewModel(), CinemaContract.View {
         (observableMovies as MutableLiveData).value = movies
     }
 
+    override fun clearMovies() {
+        movies.clear()
+        (observableMovies as MutableLiveData).value = movies
+    }
+
     override fun showLoading() {
         (loading as MutableLiveData).value = true
     }

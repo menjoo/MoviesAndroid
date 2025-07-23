@@ -51,6 +51,7 @@ class CinemaPresenter(private val movieRepository: MovieRepository,
 
     override fun onRefreshPulled() {
         view.hideError()
+        view.clearMovies()
         view.showLoading()
         loadMovies()
     }
